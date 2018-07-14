@@ -1,0 +1,68 @@
+---
+title: "Tidy Dplyr"
+author: "Mahendra Prajapati"
+date: "July 15, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+Acc_Electricity <- read.csv("D:/GitHub-2/Dataset/Access to Electricity/Access to Electricity.csv")
+
+```
+
+
+```{r changing colnames of column}
+names(Acc_Electricity)[5:32]
+names(Acc_Electricity)[5:32] <- c("1990", "1991", "1992", "1993", "1994", "1995",
+                                "1996","1997", "1998", "1999", "2000", "2001", 
+                                "2002", "2003","2004", "2005", "2006", "2007", 
+                                "2008", "2009", "2010","2011", "2012", "2013",
+                                "2014", "2015", "2016","2017")
+View(Acc_Electricity)
+
+## let's not concentrate on naming
+afg <- Acc_Electricity %>% 
+            select(c(-Country.Code, -Indicator.Code, -Indicator.Name),-`2017`)
+View(afg)
+
+## lets tidy data to plot it for that their is a package called tidyr/tidyverse. 
+## I going to use function called gather()
+
+gth <- gather(afg, key = "variable", value= "Value", 2:28)
+View(gth)
+
+## Here we are filtering the data to select the nation which I want to compare it can be anything I selected developing countries and war torn country Afghanistan.
+af <- gth %>% filter(Country.Name %in% c("Afghanistan", "Angola", "Bangladesh", "India", "China", "Sri Lanka"))
+View(af)
+
+```
+
+
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r access to electricity, echo=FALSE}
+
+ggplot(af, aes(as.numeric(variable), Value, colour=Country.Name)) + 
+  geom_line(linetype = 7, size=1) + 
+  ggtitle("Access of Electricity through various Years") + labs(x="Year", y="Frequency")
+
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
